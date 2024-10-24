@@ -5,19 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>My Tools Library</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 10px 0;
+        }
+
+        ul li a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Search bar */
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Welcome to My Personal Tools Library!</h1>
         <p>Explore my small tools:</p>
-        <ul>
-            <li><a href="workout-frequency-calculator">Workout Frequency Calculator</a></li>
-            <li><a href="crypto-news-aggregator">Crypto News Aggregator</a></li>
-            <li><a href="tool3.html">Tool 3</a></li>
-            <!-- Add more tools as needed -->
+
+        <!-- Search bar (Optional) -->
+        <div class="search-container">
+            <input type="text" id="search-input" onkeyup="filterTools()" placeholder="Search for tools...">
+        </div>
+
+        <!-- List of tools -->
+        <ul id="tools-list">
+            <!-- Repositories will be dynamically added here -->
         </ul>
+
         <p>Check out my <a href="https://www.youtube.com/channel/YourChannelLink" target="_blank">YouTube channel</a> for tutorials and more!</p>
     </div>
+
+    <script>
+        const username = 'danvelwork'; // Replace with your GitHub username
+
+        // Fetch repositories from GitHub API
+        async function fetchRepositories() {
+            try {
+                const response = await fetch(`https://api.github.com/users/${username}/repos?sort=created&direction=desc`);
+                const repos = await response.json();
+                generateToolsList(repos);
+            } catch (error) {
+                console.error('Error fetching repositories:', error);
+            }
+        }
+
+        // Generate the tools list from fetched repositories
+        function generateToolsList(repos) {
+            const toolsList = document.getElementById('tools-list');
+            repos.forEach(repo => {
+                if (repo.name !== 'danvelwork.github.io') { // Exclude the GitHub Pages repository
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = `/${repo.name}`;
+                    a.textContent = repo.name.replace(/-/g, ' ').toUpperCase(); // Format the repo name
+                    li.appendChild(a);
+                    toolsList.appendChild(li);
+                }
+            });
+        }
+
+        // Optional search functionality
+        function filterTools() {
+            const input = document.getElementById('search-input').value.toUpperCase();
+            const ul = document.getElementById('tools-list');
+            const li = ul.getElementsByTagName('li');
+            for (let i = 0; i < li.length; i++) {
+                const a = li[i].getElementsByTagName('a')[0];
+                const txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(input) > -1) {
+                    li[i].style.display = '';
+                } else {
+                    li[i].style.display = 'none';
+                }
+            }
+        }
+
+        // Call the function to fetch repositories and display the tools
+        fetchRepositories();
+    </script>
 </body>
 </html>
